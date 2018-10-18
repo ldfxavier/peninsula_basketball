@@ -9,6 +9,8 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from "react-native-modal";
 
+import Cronometro from './cronometro';
+
 class Partida extends Component {
   
 	static navigationOptions = {
@@ -24,11 +26,11 @@ class Partida extends Component {
 	state = {
 		timeUm: {
 			nome: 'Time 01',
-			pontos: 10,
+			pontos: 0,
 		},
 		timeDois: {
 			nome: 'Time 02',
-			pontos: 20,
+			pontos: 0,
 		},
 		modalPontos: false,
 		modalRetirarPontos: false,
@@ -43,6 +45,9 @@ class Partida extends Component {
 				pontos = pontos + valor;
 			}else if(tipo == 2 && pontos != 0){
 				pontos = pontos - valor;
+				if(pontos < 0){
+					pontos = 0;
+				}
 			}
 			this.setState(state => ({
 				...state,
@@ -148,6 +153,8 @@ class Partida extends Component {
 
 			</View>
 
+			<Cronometro />
+
 		</View>
 		);
 	}
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 20,
 	},
-
+	
 	placar: {
 		flexDirection: 'row',
 		justifyContent: 'space-between'
@@ -251,5 +258,45 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		color: '#FFF'
 	},
+
+	containerTimer:{
+		marginTop: 20,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignContent: 'center',
+	},
+	
+	play: {
+		marginTop: 20,
+		backgroundColor: '#0bc480',
+		width: 100,
+		height: 100,
+		borderRadius: 50,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignContent: 'center',
+	},
+	
+	pause: {
+		marginTop: 20,
+		backgroundColor: '#f95959',
+		width: 100,
+		height: 100,
+		borderRadius: 50,
+		justifyContent: 'center',
+		alignItems: 'center',
+		alignContent: 'center',
+	},
+
+	iconePlay: {
+		fontSize: 40,
+		color: '#FFF',
+		marginLeft: 5,
+	},
+
+	iconePause: {
+		fontSize: 40,
+		color: '#FFF',
+	}
 
 });

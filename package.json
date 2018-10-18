@@ -7,9 +7,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "minutes-seconds-milliseconds": "^1.0.3",
     "react": "16.6.0-alpha.8af6728",
     "react-native": "0.57.3",
     "react-native-modal": "^6.5.0",
+    "react-native-stopwatch-timer": "0.0.20",
     "react-native-vector-icons": "^6.0.2",
     "react-navigation": "^2.18.0"
   },
