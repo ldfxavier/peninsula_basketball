@@ -1,15 +1,15 @@
 import { createStackNavigator } from 'react-navigation';
 
 import Partida from './pages/partida';
-import Cronometro from './pages/cronometro';
+import Criar from './pages/criar';
 
 export default createStackNavigator({
-    Partida,
-    Cronometro,
+    Criar,
+    Partida
 },{
     navigationOptions: {
         headerStyle: {
-            backgroundColor: '#d06740'
+            backgroundColor: '#db8e40'
         },
         headerTintColor: '#fff'
     }

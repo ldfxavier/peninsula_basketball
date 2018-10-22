@@ -5,6 +5,7 @@ import {
 	Platform,
 	StyleSheet,
 	TouchableOpacity,
+	Alert
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from "react-native-modal";
@@ -19,7 +20,7 @@ class Partida extends Component {
             flex: 1,
             textAlign: 'center',
             alignSelf: 'center',
-            // marginLeft: Platform.OS === 'ios' ? 0 : -50
+            marginLeft: Platform.OS === 'ios' ? 0 : -50
         },
 	};
 
@@ -35,11 +36,39 @@ class Partida extends Component {
 		modalPontos: false,
 		modalRetirarPontos: false,
 		time: 0,
-		tipo: 0,
+		tipo: 1,
+		pontoMaximo: this.props.navigation.state.params.Partida.pontos,
+		tempoMaximo: this.props.navigation.state.params.Partida.tempo,
+		jogadores: [{
+			id: 1,
+			nome: 'Lucas Xavier',
+			time: 1
+		},{
+			id: 2,
+			nome: 'Janilton',
+			time: 1
+		},{
+			id: 3,
+			nome: 'Gilmar',
+			time: 1
+		},{
+			id: 4,
+			nome: 'Gabriel',
+			time: 2
+		},{
+			id: 5,
+			nome: 'Diego',
+			time: 2
+		},{
+			id: 6,
+			nome: 'Fausto',
+			time: 2
+		}]
 	};
 
 	alterarPontos(valor, time, tipo){		
 		if(time == 1){
+			var nomeTime = this.state.timeUm.nome;
 			var pontos = this.state.timeUm.pontos;
 			if(tipo == 1){
 				pontos = pontos + valor;
@@ -49,31 +78,38 @@ class Partida extends Component {
 					pontos = 0;
 				}
 			}
-			this.setState(state => ({
-				...state,
+			this.setState(() => ({
 				timeUm: {
-					...state.timeUm,
-					pontos,
-					tipo
+					nome:this.state.timeUm.nome,
+					pontos
 				}
 			}));
 		}else if(time == 2){
+			var nomeTime = this.state.timeDois.nome;
 			var pontos = this.state.timeDois.pontos;
 			if(tipo == 1){
 				pontos = pontos + valor;
 			}else if(tipo == 2 && pontos != 0){
 				pontos = pontos - valor;
 			}
-			this.setState(state => ({
-				...state,
+			this.setState(() => ({
 				timeDois: {
-					...state.timeDois,
-					pontos,
-					tipo
+					nome:this.state.timeDois.nome,
+					pontos
 				}
 			}));
 		}
 		this.mostrarModal(false);
+
+		if(this.state.pontoMaximo != 0 && pontos >= this.state.pontoMaximo){
+			Alert.alert(
+				'Partida finalizada',
+				'O time ' + nomeTime + ' ganhou a partida!',
+				[
+				{text: 'Finalizar', onPress: () => this.props.navigation.navigate('Criar')},
+				]
+			)
+		}
 	};
 
 	mostrarModal = (valor, time, tipo) =>
@@ -84,25 +120,28 @@ class Partida extends Component {
 		<View style={styles.container}>
 			<Modal 
 				isVisible={this.state.modalPontos}
+				transparent={true}
+				backdropColor="rgba(0,0,0,0.0)"
+				animationType="slide"
 			>
 				<View style={styles.modalPontos}>
 					<TouchableOpacity 
 						onPress={() => this.alterarPontos(1, this.state.time, this.state.tipo)}
-						style={this.state.tipo === 1 ? styles.botaoMaisPontos : styles.botaoMenosPontos}
+						style={this.state.tipo == 1 ? styles.botaoMaisPontos : styles.botaoMenosPontos}
 					>
-					<Text style={styles.botaoMaisPontosTexto}>{this.state.tipo === 1 ? '+' : '-'}1</Text>
+					<Text style={styles.botaoMaisPontosTexto}>{this.state.tipo == 1 ? '+' : '-'}1</Text>
 					</TouchableOpacity>
 					<TouchableOpacity 
 						onPress={() => this.alterarPontos(2, this.state.time, this.state.tipo)}
-						style={this.state.tipo === 1 ? styles.botaoMaisPontos : styles.botaoMenosPontos}
+						style={this.state.tipo == 1 ? styles.botaoMaisPontos : styles.botaoMenosPontos}
 					>
-					<Text style={styles.botaoMaisPontosTexto}>{this.state.tipo === 1 ? '+' : '-'}2</Text>
+					<Text style={styles.botaoMaisPontosTexto}>{this.state.tipo == 1 ? '+' : '-'}2</Text>
 					</TouchableOpacity>
 					<TouchableOpacity 
 						onPress={() => this.alterarPontos(3, this.state.time, this.state.tipo)}
-						style={this.state.tipo === 1 ? styles.botaoMaisPontos : styles.botaoMenosPontos}
+						style={this.state.tipo == 1 ? styles.botaoMaisPontos : styles.botaoMenosPontos}
 					>
-					<Text style={styles.botaoMaisPontosTexto}>{this.state.tipo === 1 ? '+' : '-'}3</Text>
+					<Text style={styles.botaoMaisPontosTexto}>{this.state.tipo == 1 ? '+' : '-'}3</Text>
 					</TouchableOpacity>
 				</View>
 			</Modal>
@@ -153,7 +192,9 @@ class Partida extends Component {
 
 			</View>
 
-			<Cronometro />
+			<Cronometro
+				tempoMaximo={this.state.tempoMaximo}
+			/>
 
 		</View>
 		);
@@ -165,7 +206,6 @@ export default Partida;
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 20,
 	},
 	
 	placar: {
@@ -174,8 +214,7 @@ const styles = StyleSheet.create({
 	},
 
 	placarPontos: {
-		height: 100,
-		width: 150,
+		width: 130,
 		borderRadius: 5,
 		backgroundColor: '#000',
 		alignItems: 'center',
@@ -204,13 +243,13 @@ const styles = StyleSheet.create({
 	addPonto: {
 		color: '#0bc480',
 		borderRadius: 5,
-		fontSize: 80
+		fontSize: 60
 	},
 
 	retirarPonto: {
 		color: '#f95959',
 		borderRadius: 5,
-		fontSize: 80
+		fontSize: 60
 	},
 
 	containerBotao: {
@@ -218,12 +257,10 @@ const styles = StyleSheet.create({
 	},
 
 	botao: {
-		width: 88,
-		height: 95,
 		borderRadius: 50,
-		marginTop: 20,
+		margin: 10,
 		alignItems: 'center',
-		alignContent: 'center'
+		alignContent: 'center',
 	},
 
 	modalPontos: {
@@ -231,6 +268,10 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		alignContent: 'center',
+		backgroundColor: '#fff',
+		borderWidth: 1,
+		borderColor: '#999',
+		borderRadius: 5,
 	},
 
 	botaoMaisPontos: {

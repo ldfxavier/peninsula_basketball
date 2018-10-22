@@ -5,15 +5,20 @@ import {
     StyleSheet,
     TouchableOpacity
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Entypo';
 
 export default class Cronometro extends Component {
 
     constructor(props) {
         super(props);
+
+        const tempoMaximo = (this.props.tempoMaximo) ? this.props.tempoMaximo * 60 : null;
+
         this.state = {
-            tempoCorrido: '00:00',
+            tempoCorrido: tempoMaximo ? this.transforma_segundos(tempoMaximo) : '00:00',
             rodando: false,
-            startTime: null,
+            iniciarTempo: tempoMaximo,
+            tempoMaximo: tempoMaximo
         };
     }
 
@@ -32,9 +37,9 @@ export default class Cronometro extends Component {
         formatado = minuto+":"+segundo;
                   
         return formatado;
-     }
+    }
 
-    start() {
+    iniciar() {
         if(this.state.rodando) {
             clearInterval(this.interval);
 
@@ -42,59 +47,42 @@ export default class Cronometro extends Component {
             return;
         }
 
-        var timer = null;
-        if(this.state.startTime != null){
-            timer = this.state.startTime;
+        var tempo = null;
+        if(this.state.iniciarTempo != null){
+            tempo = this.state.iniciarTempo;
         }
 
         this.interval = setInterval(() => {
-            timer = timer + 1;
+            if(this.state.tempoMaximo === null || this.state.tempoMaximo === undefined){
+                tempo = tempo + 1;
+            }else{
+                tempo = tempo - 1;
+            }
 
-            cronometro = this.transforma_segundos(timer);
+            cronometro = this.transforma_segundos(tempo);
 
             this.setState({
                 tempoCorrido: cronometro,
-                startTime: timer,
+                iniciarTempo: tempo,
                 rodando: true
             });
         }, 1000);
-    }
-
-    reset(){
-        clearInterval(this.interval);
-
-        this.setState({
-            tempoCorrido: '00:00',
-            startTime: null,
-            rodando: false
-        });
     }
 
     render() {
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <View style={styles.timerContainer}>
-                        <Text style={styles.timer}>
+                    <View style={styles.tempoContainer}>
+                        <Text style={styles.tempo}>
                             {this.state.tempoCorrido}
                         </Text>
-                    </View>
-                    <View style={styles.botaoContainer}>
                         <TouchableOpacity
-                            onPress={this.start.bind(this)}
-                            style={[this.state.rodando ? styles.stop : styles.start, styles.botao]}
+                            onPress={this.iniciar.bind(this)}
+                            style={[this.state.rodando ? styles.pausar : styles.iniciar, styles.botao]}
                         >
                             <Text style={styles.textoBranco}>
-                            {this.state.rodando ? 'Stop' : 'Start'}
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            onPress={this.reset.bind(this)}
-                            style={[styles.stop, styles.botao]}
-                        >
-                            <Text style={styles.textoBranco}>
-                                Reset
+                            {this.state.rodando ? <Icon name="controller-paus" size={30} /> : <Icon style={styles.iconPlay} name="controller-play" size={30} />}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -118,41 +106,33 @@ const styles = StyleSheet.create({
         flex: 1
     },
 
-    timerContainer: {
-        flex: 5,
-        justifyContent: 'center',
+    tempoContainer: {
+        flex: 1,
         alignItems: 'center'
     },
 
-    botaoContainer: {
-        flex: 3,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center'
-    },
-
-    timer: {
+    tempo: {
      fontSize: 60
     },
 
     botao: {
-        height: 100,
-        width: 100,
+        height: 50,
+        width: 50,
         borderRadius: 50,
         justifyContent: 'center',
         alignItems: 'center'
     },
 
-    start: {
-        backgroundColor: '#2b9f13',
+    iniciar: {
+        backgroundColor: '#0bc480',
     },
 
-    stop: {
-        backgroundColor: '#c32441',
+    pausar: {
+        backgroundColor: '#f95959',
     },
 
     textoBranco: {
-        fontSize: 20,
+        fontSize: 12,
         color: '#FFF',
         fontWeight: 'bold'
     }
